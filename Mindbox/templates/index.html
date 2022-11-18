@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindbox demo</title>
+    <script src="https://unpkg.com/htmx.org@1.8.4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body>
+    <div class="mx-4">
+
+        <p class="text-2x1 font-bold mb-4">Products</p>
+
+
+        <table class="min-w-[50%] mb-4">
+            <thead class="border-b text-lg">
+                <tr>
+                    <th class="border">Product ID</th>
+                    <th class="border">Product Name</th>
+                </tr>
+            </thead>
+            <tbody class="text-center text-sm">
+                {% include 'product_table.html' %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mx-4">
+
+        <p class="text-2x1 font-bold mb-4">Categories</p>
+
+
+        <table class="min-w-[50%] mb-4">
+            <thead class="border-b text-lg">
+                <tr>
+                    <th class="border">Category ID</th>
+                    <th class="border">Category Name</th>
+                </tr>
+            </thead>
+            <tbody class="text-center text-sm">
+                {% include 'category_table.html' %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <p class="text-2x1 font-bold mb-4">Pairs</p>
+
+
+    <table class="min-w-[50%] mb-4">
+        <thead class="border-b text-lg">
+            <tr>
+                <th class="border">Product ID</th>
+                <th class="border">Category ID</th>
+            </tr>
+        </thead>
+        <tbody class="text-center text-sm">
+            {% include 'prod_cat_table.html' %}
+        </tbody>
+    </table>
+</div>
+</body>
+
+</html>
