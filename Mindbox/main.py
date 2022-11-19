@@ -1,10 +1,10 @@
 import sys
 import inspect
 
-from typing import Optional
-from fastapi import FastAPI, Request, Header, Depends
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request, Depends
+from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from database import SessionLocal, engine
@@ -90,20 +90,35 @@ def startup_populate_db():
 
     db.commit()
 
-@app.get('/index/',response_class=HTMLResponse)
-async def productlist(
+@app.get('/products/',response_class=JSONResponse)
+async def product_list(
     request:Request, 
-    hx_request: Optional[str] = Header(None),
     db: Session = Depends(get_db),
     ):
 
     products = db.query(Product).all()
+    return JSONResponse(content=jsonable_encoder(products))
+
+
+@app.get('/categories/',response_class=JSONResponse)
+async def categories_list(
+    request: Request,
+    db: Session = Depends(get_db),
+    ):
     categories = db.query(Category).all()
+    context = {'request':request, 'categories':categories}
+    return JSONResponse(content=jsonable_encoder(categories))
+
+
+
+@app.get('/pairs/',response_class=JSONResponse)
+async def pairs_list(
+    request:Request,
+    db: Session = Depends(get_db)
+    ):
+    prod_cat_table = db.query(ProductCategory).all()
     pairs = db.query(ProductCategory,Product,Category).filter(ProductCategory.category_id == Category.id, 
     ProductCategory.product_id == Product.id).with_entities(Product.name.label('product_label'),
     Category.name.label('category_label')).all()
-
-    context = {'request':request,'products':products,'categories':categories,'pairs':pairs}
-    if hx_request:
-        return templates.TemplateResponse('table.html',context)
-    return templates.TemplateResponse("index.html",context)
+    assert (len(pairs) == len(prod_cat_table))
+    return JSONResponse(content=jsonable_encoder(pairs))
