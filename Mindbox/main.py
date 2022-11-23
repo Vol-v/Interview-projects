@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 import models
 from models import Product, ProductCategory, Category
+from schemas import ProductBase, CategoryBase
 
 
 #normally I would use migrations I think
@@ -25,7 +26,8 @@ def get_db():
 
 
 templates = Jinja2Templates(directory="templates")
-
+# create container for our data - to be loaded at app startup.
+data = []
 
 
 @app.on_event("startup")
@@ -122,3 +124,25 @@ async def pairs_list(
     Category.name.label('category_label')).all()
     assert (len(pairs) == len(prod_cat_table))
     return JSONResponse(content=jsonable_encoder(pairs))
+
+
+@app.post("/products/",response_model=ProductBase,status_code=200)
+def post_product(product:ProductBase):
+    #job_object = Job(**job.dict(), owner_id=owner_id)
+    new_product = Product(name=product.name)
+    db = get_db()
+    db.add(new_product)
+    db.commit()
+    db.refresh(new_product)
+    return new_product
+
+
+@app.post("/categories/",response_model=CategoryBase,status_code=200)
+def post_category(category: CategoryBase):
+    #job_object = Job(**job.dict(), owner_id=owner_id)
+    new_category = Category(name=category.name)
+    db = get_db()
+    db.add(new_category)
+    db.commit()
+    db.refresh(new_category)
+    return new_category
